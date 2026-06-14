@@ -1,0 +1,323 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #050A1A;
+  --nebula: #2D1B69;
+  --rose: #E91E8C;
+  --starlight: #F0F4FF;
+  --gold: #FFD700;
+  --soft-purple: #9B72CF;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--navy);
+  color: var(--starlight);
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* ── STARFIELD ── */
+#starfield {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+}
+
+/* ── SCREENS ── */
+.screen {
+  position: fixed; inset: 0; z-index: 10;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 2rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+.screen.active { opacity: 1; pointer-events: all; }
+
+/* ── SCREEN 1: Intro ── */
+#screen-intro .transmission {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  color: var(--soft-purple);
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.5s forwards;
+}
+#screen-intro h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  line-height: 1.15;
+  text-align: center;
+  max-width: 700px;
+  opacity: 0;
+  animation: fadeUp 1s ease 1s forwards;
+}
+#screen-intro h1 em {
+  font-style: italic;
+  color: var(--rose);
+}
+#screen-intro .subtitle {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: rgba(240,244,255,0.55);
+  margin-top: 1.2rem;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  animation: fadeUp 1s ease 1.5s forwards;
+}
+#screen-intro .cta-btn {
+  margin-top: 3rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 2s forwards;
+}
+
+/* ── SCREEN 2: Solar System ── */
+#screen-solar {
+  flex-direction: column;
+  gap: 1.5rem;
+}
+#screen-solar .instruction {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--soft-purple);
+}
+#solar-system {
+  position: relative;
+  width: min(520px, 90vw);
+  height: min(520px, 90vw);
+}
+.sun {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #fff8b0, var(--gold) 60%, #e05c00);
+  box-shadow: 0 0 30px 10px rgba(255,200,0,0.35), 0 0 60px 20px rgba(255,150,0,0.15);
+  animation: pulse-sun 3s ease-in-out infinite;
+}
+@keyframes pulse-sun {
+  0%,100% { box-shadow: 0 0 30px 10px rgba(255,200,0,0.35), 0 0 60px 20px rgba(255,150,0,0.15); }
+  50%      { box-shadow: 0 0 40px 16px rgba(255,200,0,0.55), 0 0 80px 30px rgba(255,150,0,0.25); }
+}
+
+/* Orbit rings — purely decorative, no animation */
+.orbit-ring {
+  position: absolute; top: 50%; left: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.07);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+.orbit-ring-1 { width: 130px; height: 130px; }
+.orbit-ring-2 { width: 200px; height: 200px; }
+.orbit-ring-3 { width: 280px; height: 280px; }
+.orbit-ring-4 { width: 360px; height: 360px; }
+.orbit-ring-5 { width: 470px; height: 470px; }
+
+/* Planets — absolutely positioned by JS, always clickable */
+.planet {
+  position: absolute;
+  border-radius: 50%;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+.planet:hover {
+  filter: brightness(1.5);
+  transform: translate(-50%, -50%) scale(1.5);
+}
+
+/* Tooltip label */
+.planet-label {
+  position: absolute;
+  top: calc(100% + 6px); left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(240,244,255,0.7);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.planet:hover + .planet-label,
+.planet-group:hover .planet-label { opacity: 1; }
+
+/* Planet group: planet + label together, positioned by JS */
+.planet-group {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.planet-group .planet {
+  position: relative;
+  transform: none;
+  display: block;
+}
+.planet-group .planet:hover {
+  transform: scale(1.5);
+  filter: brightness(1.5);
+}
+.planet-group .planet-label {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.p1 { width: 20px; height: 20px; background: radial-gradient(circle at 35% 35%, #e8c0a0, #8B4513); }
+.p2 { width: 24px; height: 24px; background: radial-gradient(circle at 35% 35%, #ffe0a0, #c8860a); }
+.p3 { width: 26px; height: 26px; background: radial-gradient(circle at 35% 35%, #a0d8f0, #1a6fa8); box-shadow: 0 0 8px 2px rgba(100,180,255,0.3); }
+.p4 { width: 22px; height: 22px; background: radial-gradient(circle at 35% 35%, #ffb0a0, #c0392b); }
+.p5 { width: 32px; height: 32px; background: radial-gradient(circle at 35% 35%, #f5deb3, var(--rose)); box-shadow: 0 0 14px 4px rgba(233,30,140,0.4); }
+
+/* ── SCREEN 3: Message ── */
+#screen-message .message-box {
+  max-width: 560px;
+  text-align: center;
+}
+#screen-message .eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 1.8rem;
+}
+#screen-message h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.2;
+  margin-bottom: 1.6rem;
+}
+#screen-message p {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: rgba(240,244,255,0.78);
+  margin-bottom: 1rem;
+}
+#screen-message .signature {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--gold);
+  margin-top: 1.6rem;
+}
+#screen-message .btn-row {
+  display: flex; gap: 1rem; justify-content: center;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+}
+
+/* ── SCREEN 4: YES ── */
+#screen-yes h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  text-align: center;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+#screen-yes p {
+  font-size: 1rem; font-weight: 300;
+  color: rgba(240,244,255,0.7);
+  text-align: center; max-width: 420px;
+  line-height: 1.7;
+}
+#screen-yes .heart-burst {
+  font-size: 3rem; margin-bottom: 1.5rem;
+  animation: heartbeat 1s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* ── SHARED BUTTON ── */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  border-radius: 50px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--rose), #9B1FE8);
+  color: #fff;
+  box-shadow: 0 4px 24px rgba(233,30,140,0.35);
+}
+.btn-primary:hover { box-shadow: 0 8px 32px rgba(233,30,140,0.55); }
+.btn-ghost {
+  background: transparent;
+  color: rgba(240,244,255,0.5);
+  border: 1px solid rgba(240,244,255,0.2);
+}
+.btn-ghost:hover {
+  color: var(--starlight);
+  border-color: rgba(240,244,255,0.5);
+  transform: none;
+}
+/* The No button runs away */
+#btn-no {
+  position: relative;
+  transition: none;
+}
+
+/* ── SHOOTING STAR ── */
+.shooting-star {
+  position: fixed;
+  width: 2px; height: 2px;
+  background: white;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ── NEBULA BG ── */
+.nebula-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.18;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* planet tooltip */
+#planet-hint {
+  font-size: 0.78rem;
+  color: rgba(240,244,255,0.4);
+  letter-spacing: 0.05em;
+  min-height: 1.4em;
+  text-align: center;
+  transition: opacity 0.3s;
+}
+
+@keyframes floatUp {
+  from { transform: translateY(0) rotate(0deg); opacity: 1; }
+  to   { transform: translateY(-110vh) rotate(var(--float-rot, 180deg)); opacity: 0; }
+}
+
+@keyframes shakeBox {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-8px); }
+  40%  { transform: translateX(8px); }
+  60%  { transform: translateX(-5px); }
+  80%  { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
