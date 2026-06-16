@@ -81,12 +81,16 @@ function animatePlanets(ts) {
   if (sys) {
     const cx = sys.offsetWidth  / 2;
     const cy = sys.offsetHeight / 2;
+    // Scale radii so the outermost orbit (r=235) stays within the container
+    // on any screen size, including small phones and landscape orientation.
+    const scale = Math.min(cx, cy) * 0.85 / 235;
     planetDefs.forEach((p, i) => {
       const el = document.getElementById(p.id);
       if (!el) return;
       angles[i] += p.speed * dt;
-      el.style.left = (cx + Math.cos(angles[i]) * p.r) + 'px';
-      el.style.top  = (cy + Math.sin(angles[i]) * p.r) + 'px';
+      const r = p.r * scale;
+      el.style.left = (cx + Math.cos(angles[i]) * r) + 'px';
+      el.style.top  = (cy + Math.sin(angles[i]) * r) + 'px';
     });
   }
   requestAnimationFrame(animatePlanets);
